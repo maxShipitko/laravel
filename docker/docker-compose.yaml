@@ -1,0 +1,50 @@
+version: '3.7'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ../:/app
+      - ../docker/php.ini:/usr/local/etc/php/php.ini
+    working_dir: /app
+    command: php artisan serve --host=0.0.0.0 --port=8000
+    ports:
+      - 8000:8000
+    user: "1000:1001"
+    depends_on:
+      - db
+      - redis
+      - frontend
+
+  frontend:
+    image: node:10-alpine
+    volumes:
+      - ../:/usr/src/service
+    working_dir: /usr/src/service
+    command: yarn run dev
+    ports:
+      - 8080:8080
+    user: "1000:1001"
+
+  db:
+    image: mariadb
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_DATABASE: ${DB_DATABASE}
+    volumes:
+      - ../docker/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+      - db-data:/data/mysql
+    ports:
+      - 3306:3306
+
+  redis:
+    image: redis:5-alpine
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    volumes:
+      - redis-data:/redis/data
+
+volumes:
+  db-data: {}
+  redis-data: {}

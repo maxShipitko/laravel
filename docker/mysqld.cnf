@@ -1,0 +1,15 @@
+[mysqld]
+pid-file                = /var/run/mysqld/mysqld.pid
+socket                  = /var/run/mysqld/mysqld.sock
+
+
+# Accept connections from any IP address
+bind-address            = 0.0.0.0
+
+
+# DB data volume
+datadir                 = /var/lib/mysql/data
+
+# app settings
+max_allowed_packet      = 32M
+sql-mode                = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION'
